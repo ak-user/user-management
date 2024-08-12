@@ -1,33 +1,18 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - DB_HOST=db
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=yourpassword
-      - DB_NAME=yourdbname
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-    working_dir: /app
-
   db:
     image: mysql:8.0
+    container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: yourpassword
       MYSQL_DATABASE: yourdbname
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: password
     ports:
       - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db:/var/lib/mysql
 
 volumes:
   db_data:

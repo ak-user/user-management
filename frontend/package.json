@@ -10,6 +10,10 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@tanstack/react-table": "^8.20.1",
     "axios": "^1.7.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -17,6 +21,7 @@
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "sass": "^1.77.8",
     "tailwind-merge": "^2.5.1",
     "tailwindcss-animate": "^1.0.7"
   },
