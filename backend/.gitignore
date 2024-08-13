@@ -47,7 +47,7 @@ build/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+#.env
 
 # Parcel cache
 .cache
