@@ -7,7 +7,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -26,6 +25,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { UserDialog } from '@/components/dialog/userDialog';
 
 export function UserTable({ users, onEditUser, onDeleteUser }) {
   const columns = React.useMemo(
@@ -52,14 +52,16 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
         header: 'Actions',
         enableHiding: false,
         cell: ({ row }) => {
+          const user = row.original;
           return (
             <div className="space-x-2">
-              <Button onClick={() => onEditUser(row.index)} variant="outline">
-                Edit
-              </Button>
-              <Button onClick={() => onDeleteUser(row.index)} variant="outline">
-                Delete
-              </Button>
+              <UserDialog
+                triggerText="Edit"
+                buttonVariant="outline"
+                user={user}
+                onSave={(updatedUser) => onEditUser(user, updatedUser)}
+              />
+              <Button onClick={() => onDeleteUser(user)}>Delete</Button>
             </div>
           );
         },

@@ -7,6 +7,8 @@ import {
   createUser,
   fetchUsers,
   importUsers,
+  updateUser,
+  deleteUser,
 } from '@/app/services/userService';
 
 export default function Home() {
@@ -33,10 +35,28 @@ export default function Home() {
     setUsers(updatedUsers);
   };
 
+  const handleEditUser = async (currentUser, updatedUser) => {
+    const userId = currentUser.id;
+    await updateUser(userId, updatedUser);
+    const updatedUsers = await fetchUsers();
+    setUsers(updatedUsers);
+  };
+
+  const handleDeleteUser = async (currentUser) => {
+    const userId = currentUser.id;
+    await deleteUser(userId);
+    const updatedUsers = await fetchUsers();
+    setUsers(updatedUsers);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center p-16">
       <Header onCreateUser={handleCreateUser} onUploadXlsx={handleUploadXlsx} />
-      <UserTable users={users} />
+      <UserTable
+        users={users}
+        onEditUser={handleEditUser}
+        onDeleteUser={handleDeleteUser}
+      />
     </main>
   );
 }

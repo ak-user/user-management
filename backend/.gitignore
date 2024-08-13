@@ -49,23 +49,8 @@ build/
 # dotenv environment variables file
 .env
 
-# next.js build output
-.next/
-
 # Parcel cache
 .cache
-
-# SvelteKit build / output
-.svelte-kit
-
-# Nuxt.js build / output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
 
 # Temporary directories
 tmp/
@@ -86,3 +71,5 @@ Thumbs.db
 
 # Lerna debug log
 lerna-debug.log
+
+.db/
