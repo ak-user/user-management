@@ -11,8 +11,15 @@ const createUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
   try {
-    const users = await userService.getUsers();
-    res.status(200).json(users);
+    const { page = 0, pageSize = 10 } = req.query;
+    const { users, totalUsers } = await userService.getUsers(
+      parseInt(page),
+      parseInt(pageSize),
+    );
+
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
+    res.status(200).json({ users, totalPages });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

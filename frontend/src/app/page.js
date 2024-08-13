@@ -13,40 +13,44 @@ import {
 
 export default function Home() {
   const [users, setUsers] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const loadUsers = async (page = 0) => {
+    const response = await fetchUsers({ page });
+    setUsers(response.users);
+    setTotalPages(response.totalPages);
+  };
 
   useEffect(() => {
-    const loadUsers = async () => {
-      const usersData = await fetchUsers();
-      setUsers(usersData);
-    };
-
-    loadUsers();
-  }, []);
+    loadUsers(pageIndex);
+  }, [pageIndex]);
 
   const handleCreateUser = async (newUser) => {
     await createUser(newUser);
-    const updatedUsers = await fetchUsers();
-    setUsers(updatedUsers);
+    loadUsers(pageIndex);
   };
 
   const handleUploadXlsx = async (file) => {
     await importUsers(file);
-    const updatedUsers = await fetchUsers();
-    setUsers(updatedUsers);
+    loadUsers(pageIndex);
   };
 
   const handleEditUser = async (currentUser, updatedUser) => {
     const userId = currentUser.id;
     await updateUser(userId, updatedUser);
-    const updatedUsers = await fetchUsers();
-    setUsers(updatedUsers);
+    loadUsers(pageIndex);
   };
 
   const handleDeleteUser = async (currentUser) => {
     const userId = currentUser.id;
     await deleteUser(userId);
-    const updatedUsers = await fetchUsers();
-    setUsers(updatedUsers);
+    loadUsers(pageIndex);
+  };
+
+  const fetchData = async ({ pageIndex }) => {
+    setPageIndex(pageIndex);
+    loadUsers(pageIndex);
   };
 
   return (
@@ -54,8 +58,10 @@ export default function Home() {
       <Header onCreateUser={handleCreateUser} onUploadXlsx={handleUploadXlsx} />
       <UserTable
         users={users}
+        totalPages={totalPages}
         onEditUser={handleEditUser}
         onDeleteUser={handleDeleteUser}
+        fetchData={fetchData}
       />
     </main>
   );

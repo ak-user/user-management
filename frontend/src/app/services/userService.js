@@ -1,8 +1,13 @@
 import axiosInstance from '@/config/axios';
 
-export const fetchUsers = async () => {
+export const fetchUsers = async ({ page = 0, pageSize = 10 } = {}) => {
   try {
-    const response = await axiosInstance.get('/api/users');
+    const response = await axiosInstance.get('/api/users', {
+      params: {
+        page,
+        pageSize,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);

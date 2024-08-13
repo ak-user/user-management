@@ -4,7 +4,6 @@ import * as React from 'react';
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,13 @@ import {
 } from '@/components/ui/pagination';
 import { UserDialog } from '@/components/dialog/userDialog';
 
-export function UserTable({ users, onEditUser, onDeleteUser }) {
+export function UserTable({
+  users,
+  totalPages,
+  onEditUser,
+  onDeleteUser,
+  fetchData,
+}) {
   const columns = React.useMemo(
     () => [
       {
@@ -71,24 +76,32 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
     [onEditUser, onDeleteUser],
   );
 
+  const [pageIndex, setPageIndex] = React.useState(0);
   const [sorting, setSorting] = React.useState([]);
 
   const table = useReactTable({
     data: users,
     columns,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    pageCount: totalPages,
     state: {
+      pagination: { pageIndex },
       sorting,
     },
+    onPaginationChange: ({ pageIndex }) => {
+      setPageIndex(pageIndex);
+      fetchData({ pageIndex, sorting });
+    },
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
   });
 
-  const pageCount = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex + 1;
+  const currentPage = pageIndex + 1;
 
   const handlePageChange = (pageIndex) => {
-    table.setPageIndex(pageIndex - 1);
+    if (pageIndex < 0 || pageIndex >= totalPages) return;
+    setPageIndex(pageIndex);
+    fetchData({ pageIndex, sorting });
   };
 
   return (
@@ -145,7 +158,6 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
         </Table>
       </div>
 
-      {/* Custom Pagination */}
       <Pagination>
         <PaginationContent>
           <PaginationItem>
@@ -153,19 +165,21 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                table.previousPage();
+                if (currentPage > 1) {
+                  handlePageChange(pageIndex - 1);
+                }
               }}
-              disabled={!table.getCanPreviousPage()}
+              disabled={currentPage === 1}
             />
           </PaginationItem>
 
-          {[...Array(pageCount).keys()].map((page) => (
+          {[...Array(totalPages).keys()].map((page) => (
             <PaginationItem key={page + 1}>
               <PaginationLink
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  handlePageChange(page + 1);
+                  handlePageChange(page);
                 }}
                 isActive={currentPage === page + 1}
               >
@@ -174,16 +188,18 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
             </PaginationItem>
           ))}
 
-          {pageCount > 3 && <PaginationEllipsis />}
+          {totalPages > 3 && <PaginationEllipsis />}
 
           <PaginationItem>
             <PaginationNext
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                table.nextPage();
+                if (currentPage < totalPages) {
+                  handlePageChange(pageIndex + 1);
+                }
               }}
-              disabled={!table.getCanNextPage()}
+              disabled={currentPage === totalPages}
             />
           </PaginationItem>
         </PaginationContent>

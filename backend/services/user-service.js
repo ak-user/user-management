@@ -10,10 +10,18 @@ const createUser = async (userData) => {
   }
 };
 
-const getUsers = async () => {
+const getUsers = async (page = 0, pageSize = 10) => {
   try {
-    const users = await User.findAll();
-    return users;
+    const offset = page * pageSize;
+
+    const users = await User.findAll({
+      limit: pageSize,
+      offset: offset,
+    });
+
+    const totalUsers = await User.count();
+
+    return { users, totalUsers };
   } catch (error) {
     throw new Error('Failed to fetch users');
   }
