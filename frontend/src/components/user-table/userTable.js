@@ -50,11 +50,12 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
       {
         id: 'actions',
         header: 'Actions',
+        size: 80,
         enableHiding: false,
         cell: ({ row }) => {
           const user = row.original;
           return (
-            <div className="space-x-2">
+            <div className="space-x-2 flex justify-center">
               <UserDialog
                 triggerText="Edit"
                 buttonVariant="outline"
@@ -98,7 +99,10 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className={header.column.id === 'actions' ? 'w-[80px]' : ''}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -115,7 +119,10 @@ export function UserTable({ users, onEditUser, onDeleteUser }) {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cell.column.id === 'actions' ? 'w-[80px]' : ''}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
