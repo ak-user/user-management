@@ -6,7 +6,10 @@ const createUser = async (userData) => {
     const user = await User.create(userData);
     return user;
   } catch (error) {
-    throw new Error('Failed to create user');
+    console.error('Error creating user:', error);
+    throw new Error(
+      `Failed to create user: ${error.message || 'Unknown error'}`,
+    );
   }
 };
 
@@ -23,7 +26,10 @@ const getUsers = async (page = 0, pageSize = 10) => {
 
     return { users, totalUsers };
   } catch (error) {
-    throw new Error('Failed to fetch users');
+    console.error('Error fetching users:', error);
+    throw new Error(
+      `Failed to fetch users: ${error.message || 'Unknown error'}`,
+    );
   }
 };
 
@@ -37,7 +43,10 @@ const updateUser = async (id, userData) => {
       throw new Error('User not found');
     }
   } catch (error) {
-    throw new Error('Failed to update user');
+    console.error(`Error updating user with ID ${id}:`, error);
+    throw new Error(
+      `Failed to update user: ${error.message || 'Unknown error'}`,
+    );
   }
 };
 
@@ -50,15 +59,37 @@ const deleteUser = async (id) => {
       throw new Error('User not found');
     }
   } catch (error) {
-    throw new Error('Failed to delete user');
+    console.error(`Error deleting user with ID ${id}:`, error);
+    throw new Error(
+      `Failed to delete user: ${error.message || 'Unknown error'}`,
+    );
   }
 };
 
 const importUsers = async (fileBuffer) => {
   try {
-    const workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+    let workbook;
+    try {
+      workbook = xlsx.read(fileBuffer, { type: 'buffer' });
+    } catch (error) {
+      throw new Error(
+        'Failed to read the Excel file. Please ensure the file is in a valid format.',
+      );
+    }
+
     const sheet_name_list = workbook.SheetNames;
-    const users = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    if (sheet_name_list.length === 0) {
+      throw new Error('No sheets found in the Excel file.');
+    }
+
+    let users;
+    try {
+      users = xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    } catch (error) {
+      throw new Error(
+        'Failed to parse Excel sheet into JSON. Please check the structure of the file.',
+      );
+    }
 
     const formattedUsers = users.map((user) => ({
       name: user.Name,
@@ -66,11 +97,18 @@ const importUsers = async (fileBuffer) => {
       createdAt: new Date(user['Created At']),
     }));
 
-    await User.bulkCreate(formattedUsers);
+    try {
+      await User.bulkCreate(formattedUsers);
+    } catch (error) {
+      throw new Error(
+        'Failed to save users to the database. Please check the data and try again.',
+      );
+    }
 
     return { message: 'Users imported successfully' };
   } catch (error) {
-    throw new Error('Failed to import users');
+    console.error('Error during user import:', error);
+    throw new Error(`User import failed: ${error.message}`);
   }
 };
 
