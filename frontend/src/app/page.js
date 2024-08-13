@@ -114,6 +114,7 @@ export default function Home() {
       <UserTable
         users={users}
         totalPages={totalPages}
+        currentPage={pageIndex}
         onEditUser={handleEditUser}
         onDeleteUser={handleDeleteUser}
         fetchData={fetchData}

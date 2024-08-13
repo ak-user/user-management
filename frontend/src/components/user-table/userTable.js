@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import dayjs from 'dayjs';
 import {
@@ -26,24 +24,19 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { UserDialog } from '@/components/dialog/userDialog';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 export function UserTable({
   users,
   totalPages,
+  currentPage,
   onEditUser,
   onDeleteUser,
   fetchData,
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [sorting] = useState([]);
 
-  const initialPageIndex = parseInt(searchParams.get('page')) || 0;
-
-  const [pageIndex, setPageIndex] = React.useState(initialPageIndex);
-  const [sorting, setSorting] = React.useState([]);
-
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         accessorKey: 'name',
@@ -93,11 +86,10 @@ export function UserTable({
     columns,
     pageCount: totalPages,
     state: {
-      pagination: { pageIndex },
+      pagination: { pageIndex: currentPage },
       sorting,
     },
     onPaginationChange: ({ pageIndex }) => {
-      setPageIndex(pageIndex);
       fetchData({ pageIndex, sorting });
     },
     getCoreRowModel: getCoreRowModel(),
@@ -105,12 +97,8 @@ export function UserTable({
     manualSorting: true,
   });
 
-  const currentPage = pageIndex + 1;
-
   const handlePageChange = (newPageIndex) => {
     if (newPageIndex < 0 || newPageIndex >= totalPages) return;
-    setPageIndex(newPageIndex);
-    router.replace(`?page=${newPageIndex}`);
     fetchData({ pageIndex: newPageIndex, sorting });
   };
 
@@ -175,25 +163,25 @@ export function UserTable({
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (currentPage > 1) {
-                  handlePageChange(pageIndex - 1);
+                if (currentPage > 0) {
+                  handlePageChange(currentPage - 1);
                 }
               }}
               className={
-                currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
+                currentPage === 0 ? 'opacity-50 pointer-events-none' : ''
               }
             />
           </PaginationItem>
 
           {[...Array(totalPages).keys()].map((page) => (
-            <PaginationItem key={page + 1}>
+            <PaginationItem key={page}>
               <PaginationLink
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
                   handlePageChange(page);
                 }}
-                isActive={currentPage === page + 1}
+                isActive={currentPage === page}
               >
                 {page + 1}
               </PaginationLink>
@@ -207,12 +195,12 @@ export function UserTable({
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (currentPage < totalPages) {
-                  handlePageChange(pageIndex + 1);
+                if (currentPage < totalPages - 1) {
+                  handlePageChange(currentPage + 1);
                 }
               }}
               className={
-                currentPage === totalPages
+                currentPage === totalPages - 1
                   ? 'opacity-50 pointer-events-none'
                   : ''
               }
