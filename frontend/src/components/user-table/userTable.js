@@ -158,7 +158,7 @@ export function UserTable({
         </Table>
       </div>
 
-      <Pagination>
+      <Pagination className="mt-4">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -169,7 +169,9 @@ export function UserTable({
                   handlePageChange(pageIndex - 1);
                 }
               }}
-              disabled={currentPage === 1}
+              className={
+                currentPage === 1 ? 'opacity-50 pointer-events-none' : ''
+              }
             />
           </PaginationItem>
 
@@ -199,7 +201,11 @@ export function UserTable({
                   handlePageChange(pageIndex + 1);
                 }
               }}
-              disabled={currentPage === totalPages}
+              className={
+                currentPage === totalPages
+                  ? 'opacity-50 pointer-events-none'
+                  : ''
+              }
             />
           </PaginationItem>
         </PaginationContent>
