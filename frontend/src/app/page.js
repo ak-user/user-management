@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Header } from '@/components/header/Header';
 import { UserTable } from '@/components/user-table/UserTable';
 import {
@@ -12,9 +13,14 @@ import {
 } from '@/app/services/userService';
 
 export default function Home() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialPageIndex = parseInt(searchParams.get('page')) || 0;
+
   const [users, setUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [pageIndex, setPageIndex] = useState(0);
+  const [pageIndex, setPageIndex] = useState(initialPageIndex);
 
   const loadUsers = async (page = 0) => {
     const response = await fetchUsers({ page });
@@ -25,6 +31,10 @@ export default function Home() {
   useEffect(() => {
     loadUsers(pageIndex);
   }, [pageIndex]);
+
+  useEffect(() => {
+    router.replace(`?page=${pageIndex}`);
+  }, [pageIndex, router]);
 
   const handleCreateUser = async (newUser) => {
     await createUser(newUser);

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import dayjs from 'dayjs';
 import {
   flexRender,
   getCoreRowModel,
@@ -25,6 +26,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { UserDialog } from '@/components/dialog/userDialog';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export function UserTable({
   users,
@@ -33,6 +35,14 @@ export function UserTable({
   onDeleteUser,
   fetchData,
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialPageIndex = parseInt(searchParams.get('page')) || 0;
+
+  const [pageIndex, setPageIndex] = React.useState(initialPageIndex);
+  const [sorting, setSorting] = React.useState([]);
+
   const columns = React.useMemo(
     () => [
       {
@@ -50,7 +60,9 @@ export function UserTable({
       {
         accessorKey: 'createdAt',
         header: 'Created At',
-        cell: ({ row }) => <div>{row.getValue('createdAt')}</div>,
+        cell: ({ row }) => (
+          <div>{dayjs(row.getValue('createdAt')).format('MMMM D, YYYY')}</div>
+        ),
       },
       {
         id: 'actions',
@@ -76,9 +88,6 @@ export function UserTable({
     [onEditUser, onDeleteUser],
   );
 
-  const [pageIndex, setPageIndex] = React.useState(0);
-  const [sorting, setSorting] = React.useState([]);
-
   const table = useReactTable({
     data: users,
     columns,
@@ -98,10 +107,11 @@ export function UserTable({
 
   const currentPage = pageIndex + 1;
 
-  const handlePageChange = (pageIndex) => {
-    if (pageIndex < 0 || pageIndex >= totalPages) return;
-    setPageIndex(pageIndex);
-    fetchData({ pageIndex, sorting });
+  const handlePageChange = (newPageIndex) => {
+    if (newPageIndex < 0 || newPageIndex >= totalPages) return;
+    setPageIndex(newPageIndex);
+    router.replace(`?page=${newPageIndex}`);
+    fetchData({ pageIndex: newPageIndex, sorting });
   };
 
   return (
