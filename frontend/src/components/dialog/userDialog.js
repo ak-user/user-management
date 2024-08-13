@@ -54,8 +54,10 @@ export function UserDialog({ triggerText, user, onSave, buttonVariant = '' }) {
 
   const handleClose = () => {
     setOpen(false);
-    setUserForm({ name: '', email: '' });
     setErrors({ name: '', email: '' });
+    if (triggerText === 'Create New') {
+      setUserForm({ name: '', email: '' });
+    }
   };
 
   return (
