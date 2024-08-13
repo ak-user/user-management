@@ -24,11 +24,25 @@ export function UserDialog({ triggerText, user, onSave, buttonVariant = '' }) {
 
   const handleSave = () => {
     onSave(userForm);
+    setUserForm({ name: '', email: '' });
     setOpen(false);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+    setUserForm({ name: '', email: '' });
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (!isOpen) {
+          setUserForm({ name: '', email: '' });
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant={buttonVariant}>{triggerText}</Button>
       </DialogTrigger>
@@ -61,7 +75,7 @@ export function UserDialog({ triggerText, user, onSave, buttonVariant = '' }) {
           />
         </div>
         <div className="mt-6 flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
           <Button onClick={handleSave}>Save</Button>

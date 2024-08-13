@@ -105,8 +105,8 @@ export function UserTable({
   };
 
   return (
-    <div className="w-full">
-      <div className="rounded-md border">
+    <div className="w-full h-full">
+      <div className="h-[calc(100vh-213px)] overflow-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -148,7 +148,7 @@ export function UserTable({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-[calc(100vh-213px)] text-center"
                 >
                   No results.
                 </TableCell>
